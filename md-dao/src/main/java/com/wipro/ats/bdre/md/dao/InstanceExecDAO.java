@@ -28,7 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -159,5 +161,44 @@ public class InstanceExecDAO {
         } finally {
             session.close();
         }
+    }
+
+    public Long timeDiff(int pid)
+    {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Long timeAvg=0l;
+        Long timeObtained;
+        Integer counter=0;
+        List<InstanceExec> instanceExecList=new ArrayList<>();
+        instanceExecList=session.createCriteria(InstanceExec.class).list();
+        for(InstanceExec instanceExec:instanceExecList)
+        {
+            if(instanceExec.getProcess().getProcessId()==pid)
+            {
+                timeObtained=instanceExec.getStartTs().getTime()-instanceExec.getEndTs().getTime();
+                timeAvg=timeAvg+timeObtained;
+                counter++;
+            }
+
+        }
+        timeAvg=(timeAvg/counter);
+        session.getTransaction().commit();
+        session.close();
+        return  timeAvg;
+    }
+
+    public Long currentTime(int pid)
+    {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        List<InstanceExec> instanceExecList=new ArrayList<>();
+        instanceExecList=session.createCriteria((InstanceExec.class)).add(Restrictions.eq("process.processId", pid)).addOrder(Order.desc("instanceExecId")).list();
+        Long timeObtained=instanceExecList.get(0).getStartTs().getTime()-instanceExecList.get(0).getEndTs().getTime();
+
+
+        session.getTransaction().commit();
+        session.close();
+        return timeObtained;
     }
 }

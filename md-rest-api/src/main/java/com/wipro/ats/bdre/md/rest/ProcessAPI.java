@@ -22,12 +22,10 @@ import com.wipro.ats.bdre.md.api.base.MetadataAPIBase;
 import com.wipro.ats.bdre.md.beans.ExecutionInfo;
 import com.wipro.ats.bdre.md.beans.table.Process;
 import com.wipro.ats.bdre.md.beans.table.Properties;
+import com.wipro.ats.bdre.md.dao.InstanceExecDAO;
 import com.wipro.ats.bdre.md.dao.ProcessDAO;
 import com.wipro.ats.bdre.md.dao.PropertiesDAO;
-import com.wipro.ats.bdre.md.dao.jpa.BusDomain;
-import com.wipro.ats.bdre.md.dao.jpa.ProcessTemplate;
-import com.wipro.ats.bdre.md.dao.jpa.PropertiesId;
-import com.wipro.ats.bdre.md.dao.jpa.WorkflowType;
+import com.wipro.ats.bdre.md.dao.jpa.*;
 import com.wipro.ats.bdre.md.rest.beans.ProcessExport;
 import com.wipro.ats.bdre.md.rest.util.BindingResultError;
 import com.wipro.ats.bdre.md.rest.util.DateConverter;
@@ -65,6 +63,8 @@ public class ProcessAPI extends MetadataAPIBase {
     private ProcessDAO processDAO;
     @Autowired
     private PropertiesDAO propertiesDAO;
+    @Autowired
+    private InstanceExecDAO instanceExecDAO;
 
     /**
      * This method calls proc GetProcess and fetches a record corresponding to processId passed.
@@ -893,5 +893,23 @@ public class ProcessAPI extends MetadataAPIBase {
     @Override
     public Object execute(String[] params) {
         return null;
+    }
+
+
+
+    @RequestMapping(value = {"/sla/{id}", "/sla/{id}/"}, method = RequestMethod.GET)
+    @ResponseBody public
+    RestWrapper sla(@PathVariable("id") Integer processId
+    ) {
+        List<com.wipro.ats.bdre.md.dao.jpa.Process> subProcessList=new ArrayList<com.wipro.ats.bdre.md.dao.jpa.Process>();
+        subProcessList=processDAO.subProcesslist(processId);
+        List<InstanceExec> instanceExecList=new ArrayList<>();
+
+        for(com.wipro.ats.bdre.md.dao.jpa.Process subProcess :subProcessList)
+        {
+
+        }
+        RestWrapper restWrapper = null;
+        return restWrapper;
     }
 }

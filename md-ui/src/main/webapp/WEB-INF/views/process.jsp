@@ -894,6 +894,17 @@
                                      },
 
                                 },
+                                SLA: {
+                                title: 'SLA',
+                                width: '10%',
+                                sorting: false,
+                                create: false,
+                                edit: false,
+                                display: function(data) {
+
+                                 return '<span class="label label-primary" onclick="sla(' + data.record.processId + ')">SLA</span> ';
+                                 },
+                                 },
                                 EditGraphically: {
                                     title: 'Edit Graphically',
                                     sorting: false,
@@ -922,6 +933,26 @@
                 <script>
                     function fetchLineageInfo(ied) {
                         location.href = '<c:url value="/pages/batchlineagebyinstanceexec.page?ied="/>' + ied;
+                    }
+
+                    function sla(pid){
+                    $.ajax({
+                         url: '/mdrest/process/sla/' + processId,
+                          type: 'GET',
+                          dataType: 'json',
+                           success: function(data) {
+                           if (data.Result == "OK") {
+                           console.log(window.location.protocol);
+                          var url = (window.location.protocol + "//" + window.location.host + "/mdrest/process/zippedexport/" + processId);
+                           window.location.href = url;
+                        }
+                     if (data.Result == "ERROR")
+                       alert(data.Message);
+                  },
+                   error: function() {
+                   alert('Error in zip download');
+               }
+           });
                     }
 
                 </script>
