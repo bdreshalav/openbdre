@@ -22,6 +22,7 @@ import com.wipro.ats.bdre.md.api.base.MetadataAPIBase;
 import com.wipro.ats.bdre.md.beans.ExecutionInfo;
 import com.wipro.ats.bdre.md.beans.table.Process;
 import com.wipro.ats.bdre.md.beans.table.Properties;
+import com.wipro.ats.bdre.md.beans.table.SlaBean;
 import com.wipro.ats.bdre.md.dao.InstanceExecDAO;
 import com.wipro.ats.bdre.md.dao.ProcessDAO;
 import com.wipro.ats.bdre.md.dao.PropertiesDAO;
@@ -903,13 +904,25 @@ public class ProcessAPI extends MetadataAPIBase {
     ) {
         List<com.wipro.ats.bdre.md.dao.jpa.Process> subProcessList=new ArrayList<com.wipro.ats.bdre.md.dao.jpa.Process>();
         subProcessList=processDAO.subProcesslist(processId);
+        Long currentTime;
+        Long avgTime;
         List<InstanceExec> instanceExecList=new ArrayList<>();
 
+        List<SlaBean> slaBeanList=new ArrayList<>();
+        LOGGER.info("For loop entering");
         for(com.wipro.ats.bdre.md.dao.jpa.Process subProcess :subProcessList)
         {
+        SlaBean slaBean=new SlaBean();
 
+            slaBean.setProcessId(subProcess.getProcessId());
+            slaBean.setCurrentTime(instanceExecDAO.timeDiff(subProcess.getProcessId()));
+            slaBean.setAvgTime(instanceExecDAO.currentTime(subProcess.getProcessId()));
+            LOGGER.info("Process Id current time Avg time "+" "+slaBean.getProcessId()+" "+slaBean.getCurrentTime()+" "+slaBean.getAvgTime());
+            slaBeanList.add(slaBean);
         }
-        RestWrapper restWrapper = null;
+        LOGGER.info("size of list "+slaBeanList.size());
+        RestWrapper restWrapper = new RestWrapper(slaBeanList,"slaBeanList");
+
         return restWrapper;
     }
 }
